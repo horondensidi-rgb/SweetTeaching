@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titre %}Ma Classe Pro{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'comptes/css/style.css' %}">
+</head>
+<body>
+
+    <header class="entete">
+        <a href="{% url 'comptes:tableau_bord' %}" class="entete-marque">Ma Classe Pro</a>
+
+        <nav class="entete-nav">
+            {% if user.is_authenticated %}
+                <span class="entete-utilisateur">{{ user.first_name }}</span>
+                <a href="{% url 'comptes:changer_mot_de_passe' %}">Mot de passe</a>
+                <!--
+                    Le formulaire ci-dessous sert uniquement à la
+                    déconnexion : depuis Django 5, LogoutView refuse
+                    les requêtes GET (un simple lien <a> ne suffit
+                    plus), il faut un vrai POST avec jeton CSRF.
+                -->
+                <form method="post" action="{% url 'comptes:deconnexion' %}" class="entete-deconnexion">
+                    {% csrf_token %}
+                    <button type="submit">Se déconnecter</button>
+                </form>
+            {% else %}
+                <a href="{% url 'comptes:connexion' %}">Se connecter</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        {% if messages %}
+            <div class="contenu">
+                {% for message in messages %}
+                    <p class="message-flash">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block contenu %}
+        {% endblock %}
+    </main>
+
+</body>
+</html>
